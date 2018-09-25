@@ -6,7 +6,6 @@ import java.util.Observer;
 import railwaycrossing.model.infrastructure.Direction;
 //import edu.nd.sarec.railwaycrossing.model.vehicles.Train;
 import railwaycrossing.model.vehicles.Train;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
@@ -31,7 +30,6 @@ public class CrossingGate extends Observable implements Observer{
 	private IGateState gateOpening;
 	private IGateState currentGateState;
 	private Line line;
-	private Pane root;
 
 	String gateName;
 
@@ -119,28 +117,30 @@ public class CrossingGate extends Observable implements Observer{
 
 	@Override
 	public void update(Observable o, Object arg) {
-		if (o instanceof Train){
+		if (o instanceof Train){ // If notified by  a train
 			Train train = (Train)o;
 
 			if ((train.getDirection() == Direction.WEST && train.getVehicleX() < exitPoint + 20 && train.getVehicleX() > exitPoint)) { //(train.getDirection() == Direction.EAST && train.getVehicleX() > triggerPoint))
 				currentGateState.leaveStation();
-				//System.out.println("West train leaving");
+
 			}
 			else if((train.getDirection() == Direction.WEST && train.getVehicleX() < triggerPoint + 40 && train.getVehicleX() > exitPoint + 20)) { // (train.getDirection() == Direction.EAST && train.getVehicleX() > exitPoint - 50)){
 				currentGateState.approachStation();
 				setChanged();
 				notifyObservers();
-				//System.out.println("West train approaching");
+
 			}
+
+			// Trigger points and exit points swapped for EAST train
 			if ((train.getDirection() == Direction.EAST && train.getVehicleX() > triggerPoint && train.getVehicleX() < triggerPoint + 10)) { //(train.getDirection() == Direction.EAST && train.getVehicleX() > triggerPoint))
 				currentGateState.leaveStation();
-				//System.out.println("East train leaving");
+
 			}
 			else if((train.getDirection() == Direction.EAST && train.getVehicleX() > exitPoint - 50 && train.getVehicleX() < triggerPoint)) { // (train.getDirection() == Direction.EAST && train.getVehicleX() > exitPoint - 50)){
 				currentGateState.approachStation();
 				setChanged();
 				notifyObservers();
-				//System.out.println("East train approaching");
+
 			}
 		}
 	}

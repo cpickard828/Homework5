@@ -26,8 +26,6 @@ public class CarFactory extends Observable implements Observer {
 	private Car previousCar = null;
 	private ArrayList<Car> cars = new ArrayList<Car>();
 	private ArrayList<Car> westCars = new ArrayList<Car>();
-	private Car southCar = null;
-	private Car northCar = null;
 	private Car westCar = null;
 	Direction direction;
 	Point location;
@@ -49,7 +47,6 @@ public class CarFactory extends Observable implements Observer {
 		if (previousCar == null || (direction == Direction.SOUTH && location.y < previousCar.getVehicleY()-100)) { //|| (direction == Direction.WEST  && location.y < previousCar.getVehicleX()-100)){
 			Car car = new Car(location.x,location.y, this.direction, counter, previousCar);
 			counter++;
-			boolean turnedWest = false;
 			double speedVariable = (Math.random() * 10)/10;
 			car.setSpeed((2-speedVariable)*1.5);
 
@@ -72,17 +69,21 @@ public class CarFactory extends Observable implements Observer {
 			return null;
 	}
 
-	public void addCar(Car newCar) {
+	public void addCar(Car newCar) { // Adds car to the Cars array
 		previousCar.addObserver(newCar);
 		newCar.setVehicleX((double) 424);
 		newCar.setDirection(Direction.SOUTH);
 		cars.add(newCar);
 		previousCar = newCar;
 	}
-	public Car getFirstCar() {
-		return cars.get(0);
+	public Car getFirstCar() { // Returns the car farthest along the road
+		if(cars.size() > 0)
+			return cars.get(0);
+		else {
+			return null;
+		}
 	}
-	public Car getPreviousCar() {
+	public Car getPreviousCar() { // Returns the newest car on the road
 		return previousCar;
 	}
 
@@ -96,39 +97,30 @@ public class CarFactory extends Observable implements Observer {
 	public ArrayList<Car> removeOffScreenCars() {
 		// Removing cars from the array list.
 		ArrayList<Car> toDelete = new ArrayList<Car>();
-		ArrayList<Car> toDeleteWest = new ArrayList<Car>();
-		//Car previousCar = null;
-		//Car saveCar = null;
-		//boolean needReplace = false;
 		Car turningCar = null;
-		Car leadCar = null;
-		Car behindCar = null;
-		Car tempLead = null;
 		Direction first = Direction.NORTH;
 		Direction second = Direction.NORTH;
-		//for(Car car: cars){
+
 		setChanged();
 		notifyObservers();
+		// Iterate through all cars
 		for(int i = 0; i < cars.size(); i++) {
 
 			first = cars.get(i).getDirection();
-			tempLead = cars.get(i).getLeadCar();
 			cars.get(i).move(otherFac);
 			turningCar = cars.get(i);
 			second = turningCar.getDirection();
-			if(first == Direction.SOUTH && second == Direction.WEST){
-				if(westCar != null) {
+			if(first == Direction.SOUTH && second == Direction.WEST){ // If car changed direction
+				if(westCar != null) { // West car is newest car that has turned
 					turningCar.setLeadCar(westCar);
 				}
 				westCar = turningCar;
 				for(CrossingGate gate: gates){
 					gate.deleteObserver(turningCar);
-					//if(gate != null && gate.getTrafficCommand()=="STOP")
-						//turningCar.setGateDownFlag(false);
 				}
 				otherGate.addObserver(otherGate);
 				if(previousCar.getId() == turningCar.getId())
-					this.previousCar = null;
+					this.previousCar = null; // Newest car on road cannot be the turning car
 				if(westCars.size() == 0)
 					westCars.add(turningCar);
 				else {
@@ -137,27 +129,7 @@ public class CarFactory extends Observable implements Observer {
 				}
 
 			}
-			/*if(first == Direction.SOUTH && second == Direction.WEST) {
 
-				turningCar = cars.get(i);
-				if(i-1 > -1)
-					leadCar = cars.get(i-1);
-				if(i+1 < cars.size())
-					behindCar = cars.get(i+1);
-
-				if(leadCar != null)
-					leadCar.deleteObserver(turningCar); // deletes turning car as an observer
-				if(i+1 < cars.size()) {
-					turningCar.deleteObserver(behindCar); // turning car deletes its observer
-					if(i-1 > -1) {
-						leadCar.addObserver(behindCar); //
-						behindCar.setLeadY(leadCar.getVehicleY());
-
-					}
-				}
-
-			}
-			*/
 			if (cars.get(i).offScreen()) {
 				if(cars.get(i).getDirection() == Direction.WEST)
 					westCars.remove(0);
@@ -165,31 +137,18 @@ public class CarFactory extends Observable implements Observer {
 			}
 
 		}
-		//for(Car Wcar: toDeleteWest)
-			//westCars.remove(Wcar);
-		//if(previousCar != null & previousCar.getVehicleY() > 260) {
-		//	setChanged();
-		//	notifyObservers();
-		//}
+
 		for (Car car: toDelete)
 			cars.remove(car);
-		//setChanged();
-		//notifyObservers();
 		return toDelete;
 
 	}
 
-	public Car extractWestCar() {
-		Car newCar = this.westCars.get(0);
-		westCars.remove(0);
-		return newCar;
-	}
+
 	public void update(Observable o, Object arg1) {
-		if (o instanceof CarFactory){
+		if (o instanceof CarFactory){ // Right road/EastWest road get updated version of left road
 			CarFactory leftFac = (CarFactory)o;
 			this.otherFac = leftFac;
-			//if(this.westCars.size() > 0 && this.westCars.get(0).getVehicleX() < 435)
-				//leftFac.addCar(this.extractWestCar());
 		}
 	}
 }

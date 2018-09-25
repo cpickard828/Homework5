@@ -37,8 +37,6 @@ public class MapBuilder {
 	private void buildCrossingGates(){
 		gates.put("Gate1", new CrossingGate(780,280, "Gate1"));
 		gates.put("Gate2", new CrossingGate(380,280, "Gate2"));
-		//gates.put("GateTop1", new CrossingGate(780,330, "GateTop1"));
-		//gates.put("GateTop2", new CrossingGate(380,330, "GateTop2"));
 	}
 
 	private void buildTracks(){
@@ -49,16 +47,12 @@ public class MapBuilder {
 	private void assignGatesToRoads(){
 		roads.get("Skyway").assignGate(gates.get("Gate2"), gates.get("Gate1"), null);
 		roads.get("Western Highway").assignGate(gates.get("Gate1"), gates.get("Gate2"), null);
-		//roads.get("Skyway").assignGate(gates.get("Gate2"), gates.get("Gate1"), null);
-		//roads.get("Western Highway").assignGate(gates.get("GateTop1"));
-		//roads.get("Skyway").assignGate(gates.get("GateTop2"));
 	}
 
 	private void buildCarFactories(){
 		roads.get("Western Highway").addCarFactory(gates.get("Gate2"), null);
 		roads.get("Skyway").addCarFactory(gates.get("Gate1"), null);
-		roads.get("Skyway").addCFObserver(roads.get("Western Highway").getCarFactory());
-		//roads.get("EastWest").addCarFactory();
+		roads.get("Skyway").addCFObserver(roads.get("Western Highway").getCarFactory()); // We want Skyway to be observed by Western Highway
 	}
 
 	public Collection<CrossingGate> getAllGates(){

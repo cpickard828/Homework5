@@ -47,6 +47,8 @@ public class Train extends Observable implements IVehicle{
 	public Direction getDirection() {
 		return direction;
 	}
+
+	// Move trains
 	public void move(CarFactory cF){
 		if(this.direction == Direction.WEST) {
 			currentX-=2;
@@ -55,6 +57,7 @@ public class Train extends Observable implements IVehicle{
 			currentX+=2;
 		}
 		imgView.setX(currentX);
+		// Notify observers
 		setChanged();
 		notifyObservers();
 	}

@@ -48,7 +48,6 @@ public class Simulation extends Application{
 		stage.setTitle("Railways");
 		stage.setScene(scene);
 		stage.show();
-		//Direction direction;
 
 		// Train
 		RailwayTracks track = mapBuilder.getTrack("Royal");
@@ -57,11 +56,8 @@ public class Simulation extends Application{
 		root.getChildren().add(train2.getImageView());
 	 	Train train = new Train(track.getEndX()+100,track.getEndY()-25, Direction.WEST);
 		root.getChildren().add(train.getImageView());
-		//Train train2 = new Train(-200,track2.getEndY()-25, Direction.EAST);
-		//root.getChildren().add(train2.getImageView());
 
 		for(CrossingGate gate: mapBuilder.getAllGates()) {
-			//train.addObserver(gate);
 			train2.addObserver(gate);
 			train.addObserver(gate);
 		}
@@ -70,6 +66,7 @@ public class Simulation extends Application{
 		new AnimationTimer(){
 
 			@Override
+			// Repeated handling
 			public void handle(long now) {
 
 				createCar();
@@ -83,7 +80,7 @@ public class Simulation extends Application{
 				if (train2.offScreen())
 					train2.reset();
 
-				clearCars();
+				clearCars(); // this actually makes cars move
 			}
 		}.start();
 	}
@@ -93,7 +90,7 @@ public class Simulation extends Application{
 		Collection<Road> roads = mapBuilder.getRoads();
 		for(Road road: roads){
 			if (road.getCarFactory()!= null){
-				ArrayList<Car> junkCars = road.getCarFactory().removeOffScreenCars();
+				ArrayList<Car> junkCars = road.getCarFactory().removeOffScreenCars(); // makes cars move, removes offscreen cars
 				mapDisplay.removeCarImages(junkCars);
 			}
 		}
@@ -107,7 +104,6 @@ public class Simulation extends Application{
 					Car car = road.getCarFactory().buildCar();
 					if (car != null){
 						root.getChildren().add(car.getImageView());
-						//root.getChildren().add(car.getLicenseView());
 					}
 				}
 			}

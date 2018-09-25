@@ -29,9 +29,7 @@ public class Car extends Observable implements IVehicle, Observer{
 	private double leadCarY = -1;  // Current Y position of car directly infront of this one
 	private double speed = 0.5;
 	private Direction direction;
-	private boolean turnLeft = false;
 	private int id;
-	private boolean keepWest = false;
 	/**
 	 * Constructor
 	 * @param x initial x coordinate of car
@@ -102,12 +100,16 @@ public class Car extends Observable implements IVehicle, Observer{
 		if (direction == Direction.SOUTH && leadCar!=null && leadCar.getDirection() == Direction.SOUTH && (getDistanceToLeadCar() < 50 && leadCar.getVehicleY() < 1010))
 			canMove = false;
 
+		// Third case - Westbound car too close to leading westbound car
 		if (direction == Direction.WEST && this.leadCar != null && leadCar.getDirection() == Direction.WEST && (getDistanceToLeadCarX() < 50)) {
 			canMove = false;
 			//keepWest = false;
 		}
+
+		// 4th case - Cannot turn due to potential uncomming traffic
 		if (direction == Direction.WEST && canMove == true && this.currentX < 420 && this.currentX > 410) {
 			canMove = false;
+			// Check for no traffic
 			if(otherFac.getFirstCar() == null || otherFac.getFirstCar().getVehicleY() < 350)
 				canMove = true;
 		}
@@ -116,11 +118,13 @@ public class Car extends Observable implements IVehicle, Observer{
 				currentY+=speed;
 				ivCar.setY(currentY);
 				//txtCar.setLayoutY(currentY);
-				if(currentX > 500 && direction == Direction.SOUTH && currentY > 590 && currentY < 610){
-					if (leadCarY != -1 && (int)(Math.random() * 100) < 50){
+
+				// Give option to turn
+				if(currentX > 500 && direction == Direction.SOUTH && currentY > 575 && currentY < 595){
+					if (leadCarY != -1 && (int)(Math.random() * 100) < 50){ // 50 percent chance
 						this.direction = Direction.WEST;
-						//this.leadCar = null;
-						currentY = 600;
+
+						currentY = 585;
 						ivCar.setY(currentY);
 						//txtCar.setLayoutY(currentY);
 						setChanged();
@@ -153,7 +157,7 @@ public class Car extends Observable implements IVehicle, Observer{
 	}
 
 	public boolean offScreen(){
-		if (currentY > 1020) //|| this.direction == Direction.WEST && currentX < 400)
+		if (currentY > 1020)
 			return true;
 		else
 			return false;
@@ -189,7 +193,7 @@ public class Car extends Observable implements IVehicle, Observer{
 	@Override
 	public void update(Observable o, Object arg1) {
 		if (o instanceof Car){
-			if((int) arg1 == 1) {
+			if((int) arg1 == 1) { // Updating because a car turned left
 				Car newFollow = ((Car)o).getLeadCar();
 				((Car)o).deleteObserver(this);
 				if(newFollow != null) {
@@ -198,17 +202,8 @@ public class Car extends Observable implements IVehicle, Observer{
 				}
 				this.leadCar = newFollow;
 			}
-			//Direction temp = this.leadCar.getDirection();
-			//this.leadCar = (Car)o;
-			//if(temp != this.leadCar.getDirection()) {
-			//	this.leadCar.deleteObserver(this);
-			//	this.leadCar.getLeadCar().deleteObserver(this.leadCar);
-			//	this.leadCar.getLeadCar().addObserver(this);
 
-			//}
-			else {
-				String string = Integer.toString(id) + " / " + Integer.toString(((Car)o).getId());
-				//this.setText(string);
+			else { // Updating because a car just moved
 				leadCar = ((Car)o);
 				leadCarY = (((Car)o).getVehicleY());
 				if (leadCarY > 1020 )
@@ -222,7 +217,7 @@ public class Car extends Observable implements IVehicle, Observer{
 			}
 		}
 
-		if (o instanceof CrossingGate){
+		if (o instanceof CrossingGate){ // Updating because a gate is changing states
 			CrossingGate gate = (CrossingGate)o;
 			if(gate.getTrafficCommand()=="STOP")
 				gateDown = true;

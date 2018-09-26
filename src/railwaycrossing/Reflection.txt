@@ -1,0 +1,21 @@
+1.
+  I made quite a few design changes. I had the gates observe both trains (good). I had the CarFactory for the right road (which
+  contains all the cars going south on that road, as well as all the cars going west on EastWest) observe the CarFactory on
+  the left road. I liked this decision because I could easily have westbound cars observe any cars on the left road, by passing
+  the carFactory into car's move moethod. 
+  However, I opted to only have the westernmost car check the position of the furthest car on the left road, instead of 
+  checking the position of every single car. I felt that this was a good tradeoff as far as performance would be concerned 
+  (although I did not test it checking all cars). The only issue with this, is, is that it takes awhile for the furthest car 
+  on the left to be removed when it goes offscreen (1 to 2 seconds). So sometimes you'll see cars waiting to turn when they 
+  could easily turn safely.
+  
+  
+2.
+  My design as-is, would not scale up well at all. There's too many hardcoded values. For instance, a car can only turn left if 
+  its currentX > 500, and it is going South, and it's currentY is within a certain range. What if Mayor Pete wanted to create
+  the set of roads to the left of 500? Or have the EastWest roads be north (or south) of my specified y range? It simply wouldnt work.
+  Cars can also do not observe a new gate when they change roads. This is not an issue for this project, because Professor Huang
+  allowed us to place the EastWest road south of the tracks. But if we wanted to have the EastWest road north of the tracks,
+  turning cars would not stop for the new gate.
+
+Cameron Pickard

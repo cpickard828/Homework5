@@ -1,0 +1,34 @@
+Final design:
+
+	Everything starts in ChipExplorer. The anchorpane is established, the scene and stages are set, the
+	gameMap is instantiated here, and the key events are handled here. These include movement
+	(up, down, left, right), stage resets (with spacebar), and game quits (with ESC or q). Chip
+	(and his associated textures) are instantiated here as well.
+
+	However, most of the game logic is in the GameMap. The map in ChipExplorer can either be of type Level1Map
+	or Level2Map, both of which implement GameMap. In these concrete maps, the layout of the level is established
+	in a 2 dimensional array of ints. Each cell has a number associated with it, which allows our game logic
+	to know where Chip is trying to move to (and if he can move there). Additionally, gameMap contains information
+	on how many keys Chip has, how chips are left to collect, and most of the game logic. Additionally, the concrete
+	maps contain a reference to another gameMap, called nextLevel. Whenever, Chip beats a level, the level will change
+	to nextLevel, unless nextLevel is null, in which case the game is over. Finally, gameMap has functionality to display
+	a scoreboard with a method that takes ChipExplorer's graphics context as an argument. This scoreboard will
+	always display the current level number, the number of keys held by Chip, instructions to reset the level, and
+	the number of resets the user has made. This function will call on a reference to classes UIRedHandler, UIBlueHandler,
+	or UIYellowHandler, but if only if keys of the respective color exist in the current level.
+
+	The concrete UIHandlers simply contain instructions on how to display the key counters on the graphics context.
+
+	Functionality for level resets exist because in the two levels I designed, it is possible to become stuck. If you
+	don't wisely think about the path you're taking, it can become impossible to progress. In Level 1, there are a few ways
+	to win and a few ways to lose. In Level 2, there are many ways to lose, and exactly 1 way to win. I spent
+	a lot of time designing these levels - especially level 2. I hope you enjoy them.
+
+What I would've done differently:
+
+	There is not much I would do differently. The game plays well, the levels are interesting, and the UI is helpful
+	to the user. However, there is a significant amount of code reuse between Level1Map and Level2Map. I think
+	I could have sectioned off the identical pieces of code into their own classes that both Level1 and Level2 could
+	reference when appropriate.
+
+- Cameron Pickard
